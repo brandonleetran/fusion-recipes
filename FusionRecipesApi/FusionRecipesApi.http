@@ -1,0 +1,6 @@
+@FusionRecipesApi_HostAddress = http://localhost:5283
+
+GET {{FusionRecipesApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
