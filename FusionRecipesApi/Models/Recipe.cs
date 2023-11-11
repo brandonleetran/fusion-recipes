@@ -1,12 +1,9 @@
-using System.Collections.Generic; 
-
 namespace FusionRecipesApi.Models;
-
 public class Recipe
 {
-    public string Id { get; set; }
-
-    public string Name { get; set; }
-
-    public List<Ingredient> Ingredients { get; set; }
+    public int Id { get; set; }
+    public string Title { get; set; }
+    public string MarkdownContentFilePath { get; set; } 
+    public string ImageUrl { get; set; } 
+    public DateTime PublishDate { get; set; }
 }

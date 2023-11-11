@@ -32,82 +32,23 @@ namespace FusionRecipesApi.Controllers
             return await _context.Recipes.ToListAsync();
         }
 
-        // GET: api/Recipe/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Recipe>> GetRecipe(string id)
+        // GET: api/Recipe/pad-thai
+        [HttpGet("{recipeName}")]
+        public async Task<ActionResult<string>> GetRecipe(string recipeName)
         {
-          if (_context.Recipes == null)
-          {
-              return NotFound();
-          }
-            var recipe = await _context.Recipes.FindAsync(id);
+            var markDownFilePath = Path.Combine("Recipes", $"{recipeName}.md");
 
-            if (recipe == null)
-            {
-                return NotFound();
+            if (!System.IO.File.Exists(markDownFilePath)) {
+                return NotFound("Recipe not found.");
             }
 
-            return recipe;
-        }
-
-        // PUT: api/Recipe/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutRecipe(string id, Recipe recipe)
-        {
-            if (id != recipe.Id)
-            {
-                return BadRequest();
+            try {
+                var markDownContent = await System.IO.File.ReadAllTextAsync(markDownFilePath);
+                return Ok(markDownContent);
             }
-
-            _context.Entry(recipe).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
+            catch (Exception ex) {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!RecipeExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Recipe
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Recipe>> PostRecipe(Recipe recipe)
-        {
-          if (_context.Recipes == null)
-          {
-              return Problem("Entity set 'RecipeContext.Recipes'  is null.");
-          }
-            _context.Recipes.Add(recipe);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (RecipeExists(recipe.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction("GetRecipe", new { id = recipe.Id }, recipe);
         }
 
         // DELETE: api/Recipe/5
@@ -128,11 +69,6 @@ namespace FusionRecipesApi.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool RecipeExists(string id)
-        {
-            return (_context.Recipes?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
